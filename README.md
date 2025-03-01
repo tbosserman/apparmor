@@ -28,9 +28,7 @@ you can use to start (I used aa-easyprof to generate it).
 this is to use auditd, but that has it's own set of "issues".
 ```
         echo 0 | sudo tee /proc/sys/kernel/printk_ratelimit
-```  
-        If you have sysctl installed you could also do this:  
-```
+        # If you have sysctl installed you could also do this:  
         sudo sysctl -w kernel.printk_ratelimit=0
 ```
 4. Tell apparmor to load that (mostly empty) profile so it will start
@@ -71,7 +69,7 @@ The first time you run aa-genprof, it's gonna take you a LONG TIME to
 go through all the stuff it finds. Which is why I'm giving you a sample
 profile as a starting point! As you iterate, aa-genprof will steadily be
 asking you for fewer and fewer responses. Eventually, you will mercifully see
-that you aren't see anymore log messages from the kernel for things being
+that you aren't seeing anymore log messages from the kernel for things being
 denied. That is, unless you decide there are some things that you don't
 want to let chrome access. That's all up to you.
 
