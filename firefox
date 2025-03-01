@@ -1,0 +1,71 @@
+# Last Modified: Wed Feb 12 11:29:21 2025
+abi <abi/4.0>,
+
+include <tunables/global>
+
+# This profile allows everything and only exists to give the
+# application a name instead of having the label "unconfined"
+
+
+profile firefox /{usr/lib/firefox{,-esr,-beta,-devedition,-nightly},opt/firefox}/firefox{,-esr,-bin} flags=(enforce) {
+  include <abstractions/base>
+  include <abstractions/fonts>
+  include if exists <local/firefox>
+
+  dbus send
+    bus=system
+    interface={org.freedesktop.DBus,org.freedesktop.DBus.Properties}
+    path={/org/freedesktop/login1,/org/freedesktop/timedate1,/org/freedesktop/RealtimeKit1}
+    member={GetAll,Get},
+
+  dbus send
+    bus=system
+    path=/org/freedesktop/RealtimeKit1
+    interface=org.freedesktop.RealtimeKit1
+    member={MakeThreadRealtime,MakeThreadRealtimeWithPID},
+
+  include <abstractions/dbus-strict>
+
+  /etc/ld.so.cache r,
+  /usr/lib/firefox/firefox-bin mrix,
+  /usr/lib/firefox/glxtest mrix,
+
+  owner /home/*/.config/** rwk,
+  owner /home/*/.cache/** rwk,
+  owner /home/*/.mozilla/** rwk,
+  owner /home/*/.local/** rwk,
+  owner /home/*/Downloads/** rwk,
+  /proc/** r,
+  owner /proc/** w,
+
+  owner /tmp/** rwk,
+  owner /run/user/** rw,
+
+  /etc/** r,
+  /usr/share/** r,
+  /sys/devices/** r,
+  /sys/bus/pci/devices/ r,
+  /sys/bus/pci/devices/** r,
+  /run/dbus/** rw,
+  /run/systemd/resolve/* r,
+  /usr/lib/firefox/** rix,
+  /dev/ r,
+  /dev/shm/ r,
+  /dev/null rw,
+  /dev/dri/ r,
+  /dev/dri/** rw,
+  /var/lib/snapd/desktop/** r,
+
+  capability sys_admin,
+  capability sys_chroot,
+  capability sys_ptrace,
+
+  userns,
+  network inet udp,
+  network inet tcp,
+  network inet6 udp,
+  network inet6 tcp,
+  network unix,
+  network raw,
+  network netlink,
+}

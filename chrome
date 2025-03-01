@@ -1,0 +1,91 @@
+# Last Modified: Sat Mar  1 10:12:05 2025
+abi <abi/4.0>,
+
+include <tunables/global>
+
+profile chrome /opt/google/chrome/chrome flags=(complain) {
+  include <abstractions/base>
+  include <abstractions/bash>
+  include <abstractions/gnome>
+  include <abstractions/gtk>
+  include <abstractions/libvirt-qemu>
+  include <abstractions/ubuntu-browsers.d/ubuntu-integration>
+  include <abstractions/user-tmp>
+  include <abstractions/video>
+  include <abstractions/vulkan>
+
+  capability sys_admin,
+  capability sys_chroot,
+  capability sys_ptrace,
+
+  network unix dgram,
+  network unix seqpacket,
+  network unix stream,
+
+  signal receive set=kill peer=chrome,
+  signal receive set=term peer=chrome,
+  signal send set=kill peer=chrome,
+  signal send set=term peer=chrome,
+
+  ptrace read peer=chrome,
+
+  deny /etc/{gshadow*,shadow*,sudoers,krb5.keytab} r,
+  deny /etc/{pam.d,apparmor.d,apparmor}/** r,
+  deny /opt/ r,
+
+  /dev/ r,
+  /dev/** r,
+  /dev/hidraw* rw,
+  /dev/null rw,
+  /etc/** r,
+  /home/ r,
+  /opt/google/ r,
+  /opt/google/chrome/ r,
+  /opt/google/chrome/** mr,
+  /opt/google/chrome/chrome mrix,
+  /opt/google/chrome/chrome_crashpad_handler mrix,
+  /opt/google/chrome/google-chrome mrix,
+  /proc/ r,
+  /proc/** r,
+  /proc/self/exe mrix,
+  /run/systemd/resolve/stub-resolv.conf r,
+  /sys/ r,
+  /sys/** r,
+  /sys/bus/pci/devices/ r,
+  /sys/devices/** r,
+  /usr/bin/basename mrix,
+  /usr/bin/cut mrix,
+  /usr/bin/dirname mrix,
+  /usr/bin/gawk mrix,
+  /usr/bin/grep mrix,
+  /usr/bin/mkdir mrix,
+  /usr/bin/mv mrix,
+  /usr/bin/readlink mrix,
+  /usr/bin/rm mrix,
+  /usr/bin/tr mrix,
+  /usr/bin/wc mrix,
+  /usr/bin/which.debianutils mrix,
+  /usr/bin/xdg-mime mrix,
+  /usr/bin/xdg-settings mrix,
+  /usr/share/** r,
+  /var/lib/snapd/desktop/icons/ r,
+  owner "/home/*/.config/google-chrome/Crash Reports/settings.dat" rwk,
+  owner /dev/shm/** rw,
+  owner /home/*/ r,
+  owner /home/*/.cache/ r,
+  owner /home/*/.cache/** rwk,
+  owner /home/*/.config/ r,
+  owner /home/*/.config/** rk,
+  owner /home/*/.config/google-chrome/** rwk,
+  owner /home/*/.local/** r,
+  owner /home/*/.pki/ r,
+  owner /home/*/.pki/** rk,
+  owner /home/*/.pki/** w,
+  owner /opt/google/chrome/** mrw,
+  owner /proc/** w,
+  owner /run/user/** r,
+  owner /{,var/}tmp/**/ rw,
+
+  userns,
+
+}
