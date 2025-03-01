@@ -44,19 +44,21 @@ and also put them in a file in your current directory.
 ```
         journalctl -S '2025-03-01 10:10:00' --system -t kernel -g chrome --follow | tee journal.out
 ```
-6. Now that you have a metric buttload of "deny" lines in that journal.out
+6. Run chrome. You'll see a ton of log messages spewing forth (and being
+written to the file journal.out).
+7. Now that you have a metric buttload of "deny" lines in that journal.out
 file you can use aa-genprof to start allowing stuff.
 ```
         aa-genprof /opt/google/chrome/chrome -d ~/apparmor.d -f ~/journal.out
 ```
-7. Tell the kernel to reload the profile
+8. Tell the kernel to reload the profile
 ```
         sudo apparmor_parser -r ~/apparmor.d/chrome
 ```
-8. Lather, rinse, repeat steps 5 through 7. Don't forget to exit chrome
+9. Lather, rinse, repeat steps 5 through 8. Don't forget to exit chrome
 each time you do it. I think the kernel doesn't change the permissions
 until the app restarts. I might be wrong on that, though.
-9. Once you're confident that you have a good profile you want to copy
+10. Once you're confident that you have a good profile you want to copy
 your profile to /etc/apparmor.d and set it to "enforce" mode. First,
 change `flags=(complain)` to `(flags=enforce)` in your profile. Then
 copy it to /etc/apparmor.d and tell the system to reload the profile:
