@@ -9,9 +9,86 @@ wanted to try and make my browsers not run "unconfined".
 
 Enjoy!
 
+### RANDOM NOTES
+
+I didn't want to run everything as root so I created an apparmor.d directory
+in my home directory and copies all the profiles from /etc/apparmor.d.
+
+1. Make sure you have the apparmor-utils package installed.
+2. Create the initial profile as a starting point. Here's an "empty" profile
+you can use to start (I used aa-easyprof to generate it).
+```
+        #include <tunables/global>
+
+        profile chrome /opt/google/chrome/chrome flags=(complain) {
+          #include <abstractions/base>
+        }
+```
+3. (Temporarily) remove the ratelimit on kernel printk. A better way to do
+this is to use auditd, but that has it's own set of "issues".
+```
+        echo 0 | sudo tee /proc/sys/kernel/printk_ratelimit
+```  
+        If you have sysctl installed you could also do this:  
+```
+        sudo sysctl -w kernel.printk_ratelimit=0
+```
+4. Tell apparmor to load that (mostly empty) profile so it will start
+complaining.
+```
+        sudo apparmor_parser -r ~/apparmor.d/chrome
+```
+5. Start collecting log lines. There are many ways to do this. This is
+what I did. If you have a better way, use it! Obviously, you'll use a
+different value for "-S". Look at your watch and calendar and use the
+current date / time. This will let you see the messages as they spew forth,
+and also put them in a file in your current directory.
+```
+        journalctl -S '2025-03-01 10:10:00' --system -t kernel -g chrome --follow | tee journal.out
+```
+6. Now that you have a metric buttload of "deny" lines in that journal.out
+file you can use aa-genprof to start allowing stuff.
+```
+        aa-genprof /opt/google/chrome/chrome -d ~/apparmor.d -f ~/journal.out
+```
+7. Tell the kernel to reload the profile
+```
+        sudo apparmor_parser -r ~/apparmor.d/chrome
+```
+8. Lather, rinse, repeat steps 5 through 7. Don't forget to exit chrome
+each time you do it. I think the kernel doesn't change the permissions
+until the app restarts. I might be wrong on that, though.
+9. Once you're confident that you have a good profile you want to copy
+your profile to /etc/apparmor.d and set it to "enforce" mode. First,
+change `flags=(complain)` to `(flags=enforce)` in your profile. Then
+copy it to /etc/apparmor.d and tell the system to reload the profile:
+```
+        sudo cp chrome /etc/apparmor.d
+        sudo apparmor_parser -r /etc/apparmor.d/chrome
+```
+
+The first time you run aa-genprof, it's gonna take you a LONG TIME to
+go through all the stuff it finds. Which is why I'm giving you a sample
+profile as a starting point! As you iterate, aa-genprof will steadily be
+asking you for fewer and fewer responses. Eventually, you will mercifully see
+that you aren't see anymore log messages from the kernel for things being
+denied. That is, unless you decide there are some things that you don't
+want to let chrome access. That's all up to you.
+
+### THE PROFILES
 **firefox** - This profile was created on Ubuntu 22.04 LTS for Firefox
-version 135.0.1.
+version 135.0.1. I use firefox as my default browser and I've been using
+this profile for awhile now in enforcing mode and it actually seems to
+work the way I want it.
 
 **chrome** - This profile was created on Ubuntu 22.04 LTS for Chrome
-version 133.0.6943.141.
+version 133.0.6943.141. This one is pretty strict because it might
+might get used in an environment where they want to be really, Really,
+REALLY paranoid about what a malicious website might try to access on
+a user's computer. It won't even let you peruse your own home directory.
+In real life I add a line like this so users can always
+peruse their own home directory and all subdirectories under it:
+```
+owner /home/*/** r,
+```
 

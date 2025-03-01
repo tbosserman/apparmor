@@ -35,6 +35,7 @@ profile firefox /{usr/lib/firefox{,-esr,-beta,-devedition,-nightly},opt/firefox}
   owner /home/*/.mozilla/** rwk,
   owner /home/*/.local/** rwk,
   owner /home/*/Downloads/** rwk,
+  owner /home/*/** r,
   /proc/** r,
   owner /proc/** w,
 
