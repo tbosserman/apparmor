@@ -3,7 +3,7 @@ abi <abi/4.0>,
 
 include <tunables/global>
 
-profile chrome /opt/google/chrome/chrome flags=(complain) {
+profile chrome /opt/google/chrome/chrome flags=(enforce) {
   include <abstractions/base>
   include <abstractions/bash>
   include <abstractions/gnome>
@@ -71,7 +71,11 @@ profile chrome /opt/google/chrome/chrome flags=(complain) {
   /var/lib/snapd/desktop/icons/ r,
   owner "/home/*/.config/google-chrome/Crash Reports/settings.dat" rwk,
   owner /dev/shm/** rw,
-  owner /home/*/ r,
+  # If you want to be *really* strict, comment out the next line.
+  # Then users won't even be able to look in their own home dirs via the
+  # browser. It's kinda of a P.I.T.A., though: you can't even view files
+  # in your browser or attach files to an email if your using webmail.
+  owner /home/*/** r,
   owner /home/*/.cache/ r,
   owner /home/*/.cache/** rwk,
   owner /home/*/.config/ r,
