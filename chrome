@@ -71,11 +71,12 @@ profile chrome /opt/google/chrome/chrome flags=(enforce) {
   /var/lib/snapd/desktop/icons/ r,
   owner "/home/*/.config/google-chrome/Crash Reports/settings.dat" rwk,
   owner /dev/shm/** rw,
-  # If you want to be *really* strict, comment out the next line.
-  # Then users won't even be able to look in their own home dirs via the
-  # browser. It's kinda of a P.I.T.A., though: you can't even view files
-  # in your browser or attach files to an email if your using webmail.
-  owner /home/*/** r,
+  # By default this profile is *really* strict. It won't even let you peruse
+  # your own home directory. This can be a P.I.T.A. if you want to view
+  # local HTML files in your browser, or attach a file to to an email when
+  # you're using webmail, etc. So you may want to un-comment the next line
+  # just to restore "normal" functionality to chrome.
+  #owner /home/*/** r,
   owner /home/*/.cache/ r,
   owner /home/*/.cache/** rwk,
   owner /home/*/.config/ r,

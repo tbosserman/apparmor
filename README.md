@@ -20,7 +20,7 @@ in my home directory and copied all the profiles from /etc/apparmor.d.
 2. Make sure you have the apparmor-utils package installed.
 3. Create the initial profile as a starting point. Here's an "empty" profile
 you can use to start (I used aa-easyprof to generate it). Put this file in
-`$HOME/apparmor.d`.
+`$HOME/apparmor.d/chrome`.
 ```
         #include <tunables/global>
 
@@ -62,7 +62,7 @@ file you can use aa-genprof to start allowing stuff.
 10. Lather, rinse, repeat steps 5 through 8. Don't forget to exit chrome
 each time you do it. I think the kernel doesn't change the permissions
 until the app restarts. I might be wrong on that, though.
-10. Once you're confident that you have a good profile you want to copy
+10. Once you're confident that you have a good profile, you'll want to copy
 your profile to /etc/apparmor.d and set it to "enforce" mode. First,
 change `flags=(complain)` to `(flags=enforce)` in your profile. Then
 copy it to /etc/apparmor.d and tell the system to reload the profile:
