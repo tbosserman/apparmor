@@ -95,3 +95,5 @@ peruse their own home directory and all subdirectories under it:
 ```
 owner /home/*/** r,
 ```
+**EDIT**: That line is now in the profile, but commented out. And there is
+a comment in the chrome profile talking about it.
